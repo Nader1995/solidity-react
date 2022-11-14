@@ -1,16 +1,31 @@
-import react, {Component} from "react";
+import React, {useState} from "react";
 
-class Button extends Component {
+export default  function Button () {
 
-    render() {
+    const [counter, setCounter] = useState(0);
+
+    const increase = () => {
+
+        setCounter(counter => counter + 1);
+    }
+
+    const decrease = () => {
+
+        setCounter(counter => counter -1);
+    }
+
+    const resetCounter = () => {
+
+        setCounter(counter => 0);
+    }
 
         return (
         <div>
-            <h1>Here is the button:</h1>
-            <button>Button</button>
+            <h1>Counter:</h1>
+            <p>{counter}</p>
+            <button onClick={increase}>+</button>
+            <button onClick={decrease}>-</button>
+            <button onClick={resetCounter}>reset</button>
         </div>
         );
-    }
 }
-
-export default Button;
