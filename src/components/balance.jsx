@@ -1,53 +1,45 @@
+// import React and useState hook to define ...
+// ... initial value for address and chainID to be NULL
 import React, {useState} from "react";
 
-// Extra: 1
-// import Fortmatic from 'fortmatic';
-// import {ethers} from 'ethers';
-
+// Define input fields to receive address and chain ID ...
+// ... and show balance of address
 export  default function Balance() {
 
+    // We use address and chainID to display the address.balance ...
+    //... on a specific chain
     const [address, setAddress] = useState("");
     const [chainID, setChainID] = useState("");
 
-    //Extra: 2
+    // Store web3 module in Web3 variable
     const Web3 = require('web3');
 
-    // Goerli
-    // let url = 'https://goerli.infura.io/v3/5ce1f1a940c747edae9706d2b73428fe';
-
-    //Sepolia
-    // let url = 'https://sepolia.infura.io/v3/5ce1f1a940c747edae9706d2b73428fe';
-
-    // Ganache
+    // Ganache RPC Server
     let url = 'HTTP://127.0.0.1:7545';
 
-    // let url = new Array(3).fill('');
-    // url[0][0] = 'https://sepolia.infura.io/v3/5ce1f1a940c747edae9706d2b73428fe';
-
+    // Call Provider
     let web3 = new Web3(new Web3.providers.HttpProvider(url));
 
+    // Pure JS part: waiting for the thread to ...
+    //... fetch the address balance and display it in console
     async function getEthBalance(address) {
 
         await web3.eth.getBalance(address, (err, balance) => {
+            console.log(address + " Balance: ", web3.utils.fromWei(balance))
 
-            console.log(address + " Balance: ", web3.utils.fromWei(balance)) });
+        });
     }
 
+    // On click: display address.balance and clear the fields
     const handleSubmit = (e) => {
 
         e.preventDefault();
-        // const info = {address, chainID};
+
         getEthBalance(address).then(r => {});
 
-        // console.log(info);
-
-        // Extra: 1
-        // const fm = new Fortmatic('pk_test_8D23FBCB660FFD0A', 'rinkeby');
-        // const provider = new ethers.providers.Web3Provider(fm.getWebSocketProvider());
-        // const signer = provider.getSigner();
     }
 
-
+    // Create Address and chainID fields, and button
     return (
         <div>
             <form onSubmit={handleSubmit}>
