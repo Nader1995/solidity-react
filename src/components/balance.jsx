@@ -10,6 +10,8 @@ export  default function Balance() {
     //... on a specific chain
     const [address, setAddress] = useState("");
     const [chainID, setChainID] = useState("");
+    const [balance, setBalance] = useState("");
+
 
     // Define a dictionary to include different chain ID and chain name
     const chainNum = {
@@ -39,22 +41,21 @@ export  default function Balance() {
         },
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e)=>{
 
         e.preventDefault();
 
         let url = chainNum[chainID].address;
-
-        // Use ethers to connect to network
         const ethers = require('ethers');
-
         const provider = ethers.getDefaultProvider(url);
 
-        provider.getBalance(address).then((balance) => {
+        await provider.getBalance(address).then((balance) => {
 
             // convert a currency unit from wei to ether
-            const balanceInEth = ethers.utils.formatEther(balance)
-            console.log(`balance: ${balanceInEth} ETH`)
+            const balanceInEth  = ethers.utils.formatEther(balance);
+            setBalance(balanceInEth );
+
+            console.log(`balance: ${balanceInEth } ETH`)
         })
     }
 
@@ -88,6 +89,8 @@ export  default function Balance() {
 
                 {/* We use ?. to avoid any undefined value warning */}
                 <p> {chainNum[chainID]?.name}</p>
+                <p> Your balance is: </p>
+                <p> {balance}</p>
 
             </form>
         </div>
