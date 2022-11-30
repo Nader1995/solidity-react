@@ -12,6 +12,10 @@ export  default function Balance() {
     const [chainID, setChainID] = useState("");
     const [balance, setBalance] = useState("");
 
+    // Token BAT: "0x0D8775F648430679A709E98d2b0Cb6250d2887EF"
+    const [tokenAddress, setTokenAddress] = useState("");
+    const [tokenBalance, setTokenBalance] = useState("");
+
 
     // Define a dictionary to include different chain ID and chain name
     const chainNum = {
@@ -49,6 +53,10 @@ export  default function Balance() {
         const ethers = require('ethers');
         const provider = ethers.getDefaultProvider(url);
 
+        // Getting ERC20 ABI an create and instance of contract:
+        const ERC20ABI = require('./erc20.abi.json');
+        const contract = new ethers.Contract(tokenAddress, ERC20ABI, provider);
+
         await provider.getBalance(address).then((balance) => {
 
             // convert a currency unit from wei to ether
@@ -57,6 +65,14 @@ export  default function Balance() {
 
             console.log(`balance: ${balanceInEth } ETH`)
         })
+
+        // Display token address:
+        await contract.balanceOf(address).then((balance)=>{
+
+            const tokenBalanceInEth = ethers.utils.formatEther(balance);
+            setTokenBalance(tokenBalanceInEth);
+            console.log(`token balance: ${tokenBalanceInEth } BAT`);
+        });
     }
 
 
@@ -82,6 +98,15 @@ export  default function Balance() {
                     value={chainID}
                     onChange={(e) => setChainID(e.target.value)}
                 />
+                <label>
+                    Token Address:
+                </label>
+                <input
+                    type="text"
+                    required
+                    value={tokenAddress}
+                    onChange={(e) => setTokenAddress(e.target.value)}
+                />
                 <input type="submit" value="Submit" />
                 <p> You chose the following address: </p>
                 <p>{address}</p>
@@ -91,6 +116,8 @@ export  default function Balance() {
                 <p> {chainNum[chainID]?.name}</p>
                 <p> Your balance is: </p>
                 <p> {balance}</p>
+                <p> The Token Balance is: </p>
+                <p>{tokenBalance}</p>
 
             </form>
         </div>
