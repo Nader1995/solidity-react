@@ -1,11 +1,10 @@
 # solidity-react
-My first react-solidity app
+React-solidity app
 
-1) add button to increase and decrease a number (done)
+In component repository:
 
-2) receive Meta Mask accounts and display balance (doing) ---> we are in this step
-  We enter Ganache or Meta Mask address and display balance
+1) Button.jsx: adds button to increase and decrease a number 
+
+2) balanceWithWeb3.jsx: receives wallet address, and chin ID, then displays coin balance using Web3 module
   
-3) receive wallet address and get balance
-
-4) Get address of an ERC20 token and get token's balance of the wallet address
+3) balance.jsx: receives wallet address, chain ID, and ERC20 token address, then displays the coin and token balance using ethers.js module
