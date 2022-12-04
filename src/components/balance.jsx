@@ -6,6 +6,12 @@ import React, {useState} from "react";
 // ... and show balance of address
 export  default function Balance() {
 
+    // CSS Style
+    const divStyle = {
+        margin : 50,
+        width : 1000
+    }
+
     // We use address and chainID to display the address.balance ...
     //... on a specific chain
     const [address, setAddress] = useState("");
@@ -53,31 +59,22 @@ export  default function Balance() {
         const ethers = require('ethers');
         const provider = ethers.getDefaultProvider(url);
 
-        // Getting ERC20 ABI an create and instance of contract:
+        // Getting ERC20 ABI and create and instance of contract:
         const ERC20ABI = require('./erc20.abi.json');
         const contract = new ethers.Contract(tokenAddress, ERC20ABI, provider);
 
-        await provider.getBalance(address).then((balance) => {
-
-            // convert a currency unit from wei to ether
-            const balanceInEth  = ethers.utils.formatEther(balance);
-            setBalance(balanceInEth );
-
-            console.log(`balance: ${balanceInEth } ETH`)
-        })
+        const balanceInEth = ethers.utils.formatEther(await provider.getBalance(address));
+        console.log(`balance: ${balanceInEth} ETH`);
+        setBalance(balanceInEth);
 
         // Display token address:
-        await contract.balanceOf(address).then((balance)=>{
-
-            const tokenBalanceInEth = ethers.utils.formatEther(balance);
-            setTokenBalance(tokenBalanceInEth);
-            console.log(`token balance: ${tokenBalanceInEth } BAT`);
-        });
+        const tokenBalanceInEth = ethers.utils.formatEther(await contract.balanceOf(address));
+        setTokenBalance(tokenBalanceInEth);
+        console.log(`token balance: ${tokenBalanceInEth } BAT`);
     }
 
-
     return (
-        <div>
+        <div style={divStyle}>
             <form onSubmit={handleSubmit}>
                 <h2> Address to Balance: </h2>
                 <label>
@@ -108,17 +105,14 @@ export  default function Balance() {
                     onChange={(e) => setTokenAddress(e.target.value)}
                 />
                 <input type="submit" value="Submit" />
-                <p> You chose the following address: </p>
-                <p>{address}</p>
-                <p> You chose the following chain:</p>
-
-                {/* We use ?. to avoid any undefined value warning */}
-                <p> {chainNum[chainID]?.name}</p>
-                <p> Your balance is: </p>
-                <p> {balance}</p>
-                <p> The Token Balance is: </p>
-                <p>{tokenBalance}</p>
-
+                <h4> You chose the following address: </h4>
+                <h6>{address}</h6>
+                <h4> You chose the following chain:</h4>
+                <h6> {chainNum[chainID]?.name}</h6>
+                <h4> Your balance is: </h4>
+                <h6> {balance}</h6>
+                <h4> The Token Balance is: </h4>
+                <h6>{tokenBalance}</h6>
             </form>
         </div>
     );
