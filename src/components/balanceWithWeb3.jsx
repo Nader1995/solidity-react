@@ -4,7 +4,7 @@ import React, {useState} from "react";
 
 // Define input fields to receive address and chain ID ...
 // ... and show balance of address
-export  default function Balance() {
+export  default function BalanceWithWeb3() {
 
     // We use address and chainID to display the address.balance ...
     //... on a specific chain
