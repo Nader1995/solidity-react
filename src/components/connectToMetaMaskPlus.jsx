@@ -16,9 +16,7 @@ export  default function ConnectToMetaMask() {
     const [tokenBalance, setTokenBalance] = useState("");
 
     const ERC20ABI = require('./erc20.abi.json');
-
-    // ==============================================================================================
-
+    
     const connectWalletHandler = async () => {
 
         if (account) {
@@ -29,7 +27,6 @@ export  default function ConnectToMetaMask() {
             const fetchTokenData = async () => {
                 const data = await contract.balanceOf(account);
                 setTokenBalance(ethers.utils.formatEther(data));
-                // console.log(`token balance: ${tokenBalance} BAT`);
             }
 
             if (chainID !== '0x1'){
@@ -41,8 +38,6 @@ export  default function ConnectToMetaMask() {
         }
     }
 
-    // ==============================================================================================
-
     useEffect(() => {
 
         window.$provider= new ethers.providers.Web3Provider(window.ethereum);
@@ -51,8 +46,6 @@ export  default function ConnectToMetaMask() {
                 const accountName = await window.ethereum.request({method: 'eth_requestAccounts'});
 
                 setAccount(accountName[0]);
-                // console.log(accountName[0]);
-
             };
 
             fetchData()
@@ -62,7 +55,6 @@ export  default function ConnectToMetaMask() {
 
                 const data = await window.$provider.getBalance(account);
                 setBalance(ethers.utils.formatEther(data));
-                // console.log(`balance: ${balance} ETH`);
             }
 
             fetchBalanceData()
