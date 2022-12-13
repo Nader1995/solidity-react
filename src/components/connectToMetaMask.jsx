@@ -8,6 +8,7 @@ export  default function ConnectToMetaMask() {
         width : 500
     }
 
+
     const [account, setAccount] = useState("");
     const [balance, setBalance] = useState("");
 
@@ -19,38 +20,43 @@ export  default function ConnectToMetaMask() {
 
     const ERC20ABI = require('./erc20.abi.json');
 
+    const fetchBalanceData = async (_account) => {
+        const data = await window.$provider.getBalance(_account);
+        setBalance(ethers.utils.formatEther(data));
+        console.log(`balance: ${balance} ETH`);
+    }
+
+    const contract = new ethers.Contract(tokenAddress, ERC20ABI, window.$provider);
+
+    const fetchTokenData = async (_account) => {
+        const data = await contract.balanceOf(_account);
+        setTokenBalance(ethers.utils.formatEther(data));
+        console.log(`token balance: ${tokenBalance} BAT`);
+    }
+
     const connectWalletHandler = async () => {
 
-            const accountName = await window.ethereum.request({method: 'eth_requestAccounts'});
-            setAccount(accountName[0]);
-            console.log(accountName[0]);
+        const accountName = await window.ethereum.request({method: 'eth_requestAccounts'});
+        setAccount(accountName[0]);
+    }
+
+    const getBalanceHandler = async () => {
+
+        if (account !== ""){
+
+            await fetchBalanceData(account)
+                .catch(console.error);
+
+            await fetchTokenData(account)
+                .catch(console.error)
+        }
     }
 
     useEffect(() => {
 
-        if (account){
-            
-            const fetchBalanceData = async () => {
-                const data = await window.$provider.getBalance(account);
-                setBalance(ethers.utils.formatEther(data));
-                console.log(`balance: ${balance} ETH`);
-            }
-
-            const contract = new ethers.Contract(tokenAddress, ERC20ABI, window.$provider);
-
-            const fetchTokenData = async () => {
-                const data = await contract.balanceOf(account);
-                setTokenBalance(ethers.utils.formatEther(data));
-                console.log(`token balance: ${tokenBalance} BAT`);
-            }
-
-            fetchBalanceData()
-                .catch(console.error);
-
-            fetchTokenData()
-                    .catch(console.error)
-        }
-    }, [account, balance, tokenAddress, tokenBalance, ERC20ABI])
+        getBalanceHandler()
+            .catch(console.error);
+    })
 
     return(
         <div style={divStyle}>

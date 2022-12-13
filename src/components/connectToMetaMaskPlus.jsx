@@ -10,80 +10,112 @@ export  default function ConnectToMetaMask() {
 
     const [account, setAccount] = useState("");
     const [balance, setBalance] = useState("");
+    const [status, setStatus] = useState("Connect to Network");
 
     // Token BAT: "0x0D8775F648430679A709E98d2b0Cb6250d2887EF"
     const [tokenAddress, setTokenAddress] = useState("");
     const [tokenBalance, setTokenBalance] = useState("");
 
     const ERC20ABI = require('./erc20.abi.json');
-    
+
+    let fetchAccount = async () => {
+
+        const accountName = await window.ethereum.request({method: 'eth_requestAccounts'});
+
+        await setAccount(accountName[0]);
+        // await console.log(account);
+    };
+
+    const fetchBalance = async (account) => {
+
+        const data = await window.$provider.getBalance(account);
+
+        await setBalance(ethers.utils.formatEther(data));
+        await console.log(`balance: ${balance} ETH`);
+    }
+
     const connectWalletHandler = async () => {
 
-        if (account) {
+        // window.$provider= new ethers.providers.Web3Provider(window.ethereum);
 
-            const contract = new ethers.Contract(tokenAddress, ERC20ABI, window.$provider);
-            const chainID = await window.ethereum.request({method: 'eth_chainId'});
+        if(window.ethereum){
 
-            const fetchTokenData = async () => {
-                const data = await contract.balanceOf(account);
-                setTokenBalance(ethers.utils.formatEther(data));
-            }
+            setStatus("Connected");
+        }else{
 
-            if (chainID !== '0x1'){
-                alert("Please connect to Mainnet!");
-            }else {
-                fetchTokenData()
-                    .catch(console.error)
-            }
+            setStatus("Not Connected");
         }
     }
 
-    useEffect(() => {
+    const getTokenHandler = async () => {
 
-        window.$provider= new ethers.providers.Web3Provider(window.ethereum);
+        const contract = new ethers.Contract(tokenAddress, ERC20ABI, window.$provider);
+        const chainID = await window.ethereum.request({method: 'eth_chainId'});
 
-            const fetchData = async () => {
-                const accountName = await window.ethereum.request({method: 'eth_requestAccounts'});
+        const fetchTokenData = async () => {
+            const data = await contract.balanceOf(account);
+            setTokenBalance(ethers.utils.formatEther(data));
+            // console.log(`token balance: ${tokenBalance} BAT`);
+        }
 
-                setAccount(accountName[0]);
-            };
+        if (chainID !== '0x1'){
+            alert("Please connect to Mainnet!");
+        }else if (chainID === '0x1' && account) {
+            fetchTokenData()
+                .catch(console.error)
+        }else{
+            alert("Please set the account first");
+        }
+    }
 
-            fetchData()
+    const eventHandler = async () => {
+
+        // It will not display balance the first time when I define
+        // if (account === ""){
+
+            window.$provider= new ethers.providers.Web3Provider(window.ethereum);
+
+            await fetchAccount()
                 .catch(console.error);
 
-            const fetchBalanceData = async () => {
+            await console.log(account);
 
-                const data = await window.$provider.getBalance(account);
-                setBalance(ethers.utils.formatEther(data));
-            }
+            await fetchBalance(account)
+                .catch(console.error);
+        // }
 
-            fetchBalanceData()
+        window.ethereum.on('chainChanged', async (chainId) => {
+
+            window.$provider= new ethers.providers.Web3Provider(window.ethereum);
+            await fetchAccount()
                 .catch(console.error);
 
-            window.ethereum.on('chainChanged', () => {
+            await fetchBalance(account)
+                .catch(console.error);
+        });
 
-                window.$provider= new ethers.providers.Web3Provider(window.ethereum);
-                fetchData()
-                    .catch(console.error);
+        window.ethereum.on('accountsChanged', async (accounts) => {
 
-                fetchBalanceData()
-                    .catch(console.error);
-            });
+            await setAccount(accounts);
 
-            window.ethereum.on('accountsChanged', () => {
+            // await fetchAccount()
+            //     .catch(console.error);
 
-                fetchData()
-                    .catch(console.error);
+            await fetchBalance(accounts)
+                .catch(console.error);
+        });
+    }
 
-                fetchBalanceData()
-                    .catch(console.error);
-                });
+useEffect( () => {
 
-        }, [account, balance, tokenAddress, tokenBalance, ERC20ABI])
+        eventHandler()
+            .catch(console.error)
+        })
 
     return(
         <div style={divStyle}>
-            <h2> Connect to MetaMask </h2>
+            <h2> Connect to MetaMask + </h2>
+            <button onClick={connectWalletHandler}>{status}</button>
             <p>Account Address: {account}</p>
             <p>Balance: {balance}</p>
             <label>
@@ -95,7 +127,7 @@ export  default function ConnectToMetaMask() {
                 value={tokenAddress}
                 onChange={(e) => setTokenAddress(e.target.value)}
             />
-            <button onClick={connectWalletHandler}>Get Token</button>
+            <button onClick={getTokenHandler}>Get Token</button>
             <p>Token Balance: {tokenBalance}</p>
         </div>
     )
