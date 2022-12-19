@@ -11,3 +11,5 @@ In the component repository:
 4) connectToMetaMask.jsx: enter the token address, then click button to connect to meta mask, show account address, account balance and token balance.
 
 5) connectToMetaMaskPlus.jsx: immediately conncet to meta mask and display account address and account balance, listen to any network and acount change and update results, receive token address and display token balance.
+
+6) connectToMetaMaskPro.jsx: provide client with wallet options, then connect to wallet to receive account address and balance. Provide cliend with different tokens and display account token balance
