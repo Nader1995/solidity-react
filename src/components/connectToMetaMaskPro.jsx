@@ -4,11 +4,26 @@ import {ethers} from "ethers";
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
 
-// Meta Mask is the default function, so we only need to add Binance Chain Wallet
+// import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
+
 const providerOptions = {
     binancechainwallet: {
         package: true,
     },
+    // coinbasewallet: {
+    //     package: CoinbaseWalletSDK, // Required
+    //     options: {
+    //         appName: "Coinbase", // Required
+    //         infuraId: process.env.INFURA_ID, // Required
+    //         chainId: 11155111, //4 for Rinkeby, 1 for mainnet (default)
+    //     },
+    // },
+
+    // walletconnect: {
+    //     package: WalletConnect, // required
+    //     options: {
+    //         infuraId: process.env.INFURA_ID // required
+    //     }
 }
 
 export  default function ConnectToMetaMaskPro() {
@@ -19,7 +34,6 @@ export  default function ConnectToMetaMaskPro() {
 
     const ERC20ABI = require('./erc20.abi.json');
 
-    // Called by connectHandler
     async function getAccountAddress(library){
 
         await setConnectedAccount("Wait to fetch data");
@@ -27,7 +41,6 @@ export  default function ConnectToMetaMaskPro() {
         await setConnectedAccount(web3Accounts[0]);
     }
 
-    // Called by connectHandler
     async function getAccountBalance(library){
 
         await setBalance("Wait to fetch data");
@@ -70,10 +83,8 @@ export  default function ConnectToMetaMaskPro() {
 
             alert("Connect to wallet first");
         }
-
     }
 
-    // Called by connectWeb3Wallet
     async function connectHandler (web3Provider) {
 
         let library = new ethers.providers.Web3Provider(web3Provider);
@@ -86,6 +97,7 @@ export  default function ConnectToMetaMaskPro() {
 
         try{
             window.$web3Modal = new Web3Modal({
+                // network: "sepolia",
                 theme: "dark",
                 cacheProvider:false,
                 providerOptions,
@@ -106,19 +118,19 @@ export  default function ConnectToMetaMaskPro() {
         setTokenBalance("");
     };
 
-    // Account change listener
     window.ethereum.on('accountsChanged', async ()=> {
 
         if(connectedAccount) {
+            await setTokenBalance("");
             await connectHandler(window.$web3Provider);
             console.log("account changed");
         }
     });
 
-    // Chain change listener
     window.ethereum.on('chainChanged', async ()=>{
 
         if(connectedAccount){
+            await setTokenBalance("");
             await connectHandler(window.$web3Provider);
             console.log("chain changed");
         }
@@ -149,7 +161,6 @@ export  default function ConnectToMetaMaskPro() {
                     <h6> token balance is {tokenBalance} </h6>
                     )
                 }
-
             </header>
     </div>
     );
